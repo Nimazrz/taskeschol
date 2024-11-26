@@ -5,7 +5,9 @@
     <h2>لیست تمامی دانش اموزان</h2>
 {% for student in students %}
     <div>
-        {{ student.first_name }} {{ student.last_name }}
+
+        <div>        کد ملی:{{ student.meli_code }}   {{ student.first_name }} {{ student.last_name }}  نام و نام خانوادگی :
+</div>
         {% if student.teacher == request.user %}
             <span>دانش‌آموز شما</span>
         {% elif student.teacher is not None %}
