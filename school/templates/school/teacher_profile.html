@@ -1,0 +1,14 @@
+{% extends 'parent/base.html'%}
+{% block title %}prodile{% endblock %}
+{% block content %}
+
+    teacher profile
+    <h2>students</h2>
+    {% for student in students %}
+        {{ student }}
+        <br>
+    {% endfor %}
+
+<a href="{% url 'school:logout' %}">خروج</a>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% if request.user.is_authenticated %}
+
+
+   {% if request.user.is_teacher %}
+    <a href="{% url 'school:teacher_profile' request.user.id %}">{{ request.user.username }}</a>
+   {% else %}
+         <a href="{% url 'school:student_profile' request.user.id %}">{{ request.user.username }}</a>
+   {% endif%}
+
+{% else %}
+    <a href="{% url 'school:login' %}">login</a>
+{% endif %}
+
+<hr>
