@@ -11,5 +11,6 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('teacher_profile/<int:user_id>', views.teacher_profile, name='teacher_profile'),
     path('student_profile/<int:user_id>', views.student_profile, name='student_profile'),
-
+    path('students/', views.students, name='students'),
+    path('add_student/<int:st_id>/', views.add_student, name='add_student'),
 ]

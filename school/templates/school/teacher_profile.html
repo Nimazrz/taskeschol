@@ -7,7 +7,11 @@
     {% for student in students %}
         {{ student }}
         <br>
+        {% empty %}
+        <div>شما هیچ دانش اموزی ندارید</div>
     {% endfor %}
+    <div><a href="{% url 'school:students' %}">اضافه کردن دانش اموز</a> </div>
+    <br>
 
 <a href="{% url 'school:logout' %}">خروج</a>
 

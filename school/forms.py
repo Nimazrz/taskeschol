@@ -7,10 +7,13 @@ from account.models import *
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(max_length=250, required=True, widget=forms.PasswordInput)
     password2 = forms.CharField(max_length=250, required=True, widget=forms.PasswordInput)
+    is_teacher = forms.BooleanField(required=False)
+
+
 
     class Meta:
         model = Teacher
-        fields = ('username', 'first_name', 'last_name', 'meli_code', 'school', 'bio', 'is_teacher')
+        fields = ('username', 'first_name', 'last_name', 'meli_code', 'school', 'bio',)
 
     def clean_password2(self):
         password = self.cleaned_data.get('password')

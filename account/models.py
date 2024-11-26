@@ -72,7 +72,7 @@ class Teacher(AbstractBaseUser, PermissionsMixin):
 
 
 class Student(AbstractBaseUser, PermissionsMixin):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='students')
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='students', blank=True, null=True)
     username = models.CharField(max_length=50, unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)

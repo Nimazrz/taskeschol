@@ -12,7 +12,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'last_name',)
+    list_display = ('username', 'first_name', 'last_name','teacher')
     search_fields = ('username', 'first_name', 'last_name')
     list_filter = ('is_active', )
     ordering = ('-created_at',)
