@@ -1,18 +1,105 @@
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import logout, login
 from django.contrib.auth import authenticate
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
 from .forms import *
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseForbidden
+from django.http import HttpResponse, Http404
+# api
+from rest_framework.views import APIView
+from rest_framework import mixins, authentication
+from rest_framework import generics
+from rest_framework.request import Request
+from .serializer import *
+from rest_framework.response import Response
+from rest_framework.authentication import BasicAuthentication
+from rest_framework import status
+from django.contrib.auth import logout, login
+from rest_framework import viewsets
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.mixins import *
+from rest_framework.viewsets import GenericViewSet
 
-
-from django.http import HttpResponse, JsonResponse, Http404
-
-
-# from .forms import RegisterForm
 
 # Create your views here.
+
+
+class RegistrationAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = RegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            login(request, user)
+        return Response({'message': f'You have successfully logged in as {user}'}, status=status.HTTP_200_OK)
+
+
+class LogoutAPIView(APIView):
+    """
+    {
+    "X-CSRFToken": "{% csrf_token %}"
+    }
+    send this as json request for logout
+    """
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            logout(request)
+            return Response({'message': f'You have successfully logged out'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'You have not logged in'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfileAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
+
+    # def get_queryset(self): ?????
+
+    def get_object(self):
+        return self.request.user
+
+
+class StudentListAPIView(generics.ListAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+# for delete and edit need to use the id in url
+class TeacherNewsListAPIView(ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
+    serializer_class = TeacherNewsSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return News.objects.filter(author=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+class StudentNewsListAPIView(ListModelMixin, GenericViewSet):
+    serializer_class = StudentNewsSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        news = News.objects.filter(author=self.request.user.teacher)
+        return news
 
 
 @login_required(login_url='school:login')
@@ -26,6 +113,7 @@ def page(request):
         template = 'school/student_page.html'
 
     return render(request, template)
+
 
 @login_required(login_url='school:login')
 def teacher_profile(request, user_id):
@@ -45,7 +133,6 @@ def student_profile(request, user_id):
 @login_required  # Ensure the user is logged in
 def students(request):
     if not request.user.is_teacher:
-
         return HttpResponseForbidden("شما مجوز لازم برای دسترسی به این صفحه رو ندارید")
 
     students = Student.objects.all()
@@ -53,7 +140,6 @@ def students(request):
         'students': students
     }
     return render(request, 'school/students.html', context)
-
 
 
 @login_required  # Ensure the user is logged in

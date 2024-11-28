@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'school.apps.SchoolConfig',
-    "account.apps.AccountConfig"
+    "account.apps.AccountConfig",
+    "rest_framework",
+    "rest_framework.authentication",
 ]
 
 MIDDLEWARE = [
@@ -133,12 +135,21 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account.Teacher'
-# AUTH_USER_MODEL = 'account.Student'
 AUTHENTICATION_BACKENDS = [
-    'account.backends.StudentBackend',  # Replace with the actual path to your backend class
-    'django.contrib.auth.backends.ModelBackend',  # This ensures the default backend still works
+    'account.backends.StudentBackend',  # Custom Backend
+    'django.contrib.auth.backends.ModelBackend',  # Default Backend
+    #api
+    'rest_framework.authentication.SessionAuthentication',
+
 ]
 
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default session backend (database-backed sessions)
 SESSION_COOKIE_AGE = 3600  # 1 hour session expiry
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}

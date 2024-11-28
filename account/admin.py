@@ -16,3 +16,7 @@ class StudentAdmin(admin.ModelAdmin):
     search_fields = ('username', 'first_name', 'last_name')
     list_filter = ('is_active', )
     ordering = ('-created_at',)
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'body', 'author')

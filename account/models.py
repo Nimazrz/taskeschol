@@ -113,3 +113,19 @@ class Student(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+class News(models.Model):
+    author = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='news')
+    title = models.CharField(max_length=50)
+    body = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+
