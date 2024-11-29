@@ -8,7 +8,9 @@ app_name = 'school'
 router = DefaultRouter()
 router.register(r'teacher_news', views.TeacherNewsListAPIView, basename='teacher_news')
 router.register(r'news', views.StudentNewsListAPIView, basename='news')
-
+router.register(r'teacher_assignments', views.TeacherAssignmentsAPIView, basename='teacher_assignments')
+router.register(r'student_assignments', views.StudentAssignmentsAPIView, basename='student_assignments')
+router.register(r'answer', views.AnsAssignmentViewSet, basename='answer')
 urlpatterns = [
     path('', views.page, name='page'),
     path('login/', views.login_view, name='login'),
@@ -28,7 +30,6 @@ urlpatterns = [
 
     path('api/students/', views.StudentListAPIView.as_view(), name='student-list'),
 
-    path('api/', include(router.urls)),
     path('api/', include(router.urls)),
 
 ]

@@ -42,7 +42,7 @@ class LoginAPIView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             login(request, user)
-        return Response({'message': f'You have successfully logged in as {user}'}, status=status.HTTP_200_OK)
+        return Response({'message': f'You have successfully logged'}, status=status.HTTP_200_OK)
 
 
 class LogoutAPIView(APIView):
@@ -88,6 +88,7 @@ class TeacherNewsListAPIView(ListModelMixin, CreateModelMixin, UpdateModelMixin,
     def get_queryset(self):
         return News.objects.filter(author=self.request.user)
 
+    # save author from request for news
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -100,6 +101,52 @@ class StudentNewsListAPIView(ListModelMixin, GenericViewSet):
     def get_queryset(self):
         news = News.objects.filter(author=self.request.user.teacher)
         return news
+
+class TeacherAssignmentsAPIView(viewsets.ModelViewSet):
+    serializer_class = TeacherAssignmentsSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        teacher = self.request.user
+        assignments = Assignment.objects.filter(teacher=teacher)
+        return assignments
+
+    def perform_create(self, serializer):
+        serializer.save(teacher=self.request.user)
+
+
+class StudentAssignmentsAPIView(viewsets.ReadOnlyModelViewSet):
+    serializer_class = StudentAssignmentsSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return Assignment.objects.filter(teacher=self.request.user.teacher)
+
+
+class AnsAssignmentViewSet(viewsets.ModelViewSet):
+    queryset = Ans_assignment.objects.all()
+    serializer_class = AnsAssignmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Only return the current user's answers
+        return Ans_assignment.objects.filter(student=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @login_required(login_url='school:login')

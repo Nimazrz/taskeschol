@@ -120,3 +120,39 @@ class StudentNewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
         fields = ['title', 'body']
+
+class TeacherAssignmentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = ['id','title', 'body', 'file','delivery_deadline']
+
+class StudentAssignmentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = ['id','title', 'body', 'file','delivery_deadline']
+
+
+class AnsAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ans_assignment
+        fields = ['id', 'assignment', 'body', 'file', 'created_at', 'updated_at']
+
+    def validate(self, data):
+        assignment = data['assignment']
+        if assignment.delivery_deadline < timezone.now().date():
+            raise serializers.ValidationError("The deadline for this assignment has passed. You cannot submit an answer.")
+        return data
+
+    def create(self, validated_data):
+        student = self.context['request'].user
+
+        # Validate that the student is allowed to submit answers for this assignment
+        if validated_data['assignment'].teacher != student.teacher:
+            raise serializers.ValidationError("You can only submit answers for your teacher's assignments.")
+
+        # Check for existing answers
+        if Ans_assignment.objects.filter(student=student, assignment=validated_data['assignment']).exists():
+            raise serializers.ValidationError("You have already submitted an answer for this assignment.")
+
+        validated_data['student'] = student
+        return super().create(validated_data)
