@@ -78,13 +78,16 @@ WSGI_APPLICATION = 'taskeschol.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'school',
+        'USER': 'school_admin',
+        'PASSWORD': 'adminadmin',
+        'PORT': 5432,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -116,14 +119,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-#for login and logout
-LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/login/'
-LOGOUT_URL = '/logout/'
-
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -138,18 +133,21 @@ AUTH_USER_MODEL = 'account.Teacher'
 AUTHENTICATION_BACKENDS = [
     'account.backends.StudentBackend',  # Custom Backend
     'django.contrib.auth.backends.ModelBackend',  # Default Backend
-    #api
+    # api
     'rest_framework.authentication.SessionAuthentication',
 
 ]
 
 # Session settings
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default session backend (database-backed sessions)
-SESSION_COOKIE_AGE = 3600  # 1 hour session expiry
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 3600
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+
 }

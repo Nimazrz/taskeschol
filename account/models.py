@@ -142,7 +142,7 @@ class Assignment(models.Model):
 
 
 class Ans_assignment(models.Model):
-    student = models.OneToOneField(Student, on_delete=models.CASCADE, related_name='assignments')
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, related_name='ans_assignments')
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='answer')
     body = models.TextField(max_length=1000, blank=True, null=True)
     file = models.FileField(upload_to='assignments/%Y/%m/%d', blank=True, null=True)
