@@ -7,15 +7,10 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework import status
 from django.contrib.auth import logout, login
 from rest_framework import viewsets
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.mixins import *
-from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import GenericViewSet
 from django.shortcuts import get_object_or_404
-from django.db.models import Prefetch
 from .Permissions import *
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
