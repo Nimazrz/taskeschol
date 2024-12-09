@@ -18,8 +18,6 @@ from .Permissions import *
 class RegistrationAPIView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = RegistrationSerializer(data=request.data)
-        print("data")
-        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Registration successful"}, status=status.HTTP_201_CREATED)
