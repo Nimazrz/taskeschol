@@ -5,7 +5,7 @@ from account.models import *
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from django.contrib.auth.hashers import make_password
-
+from .models import *
 
 
 class RegistrationSerializer(serializers.Serializer):
@@ -42,9 +42,10 @@ class RegistrationSerializer(serializers.Serializer):
         if is_teacher:
             user = Teacher.objects.create(meli_code=meli_code, **validated_data)
         else:
-            user = Student.objects.create(meli_code=meli_code,**validated_data)
+            user = Student.objects.create(meli_code=meli_code, **validated_data)
 
         return user
+
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(write_only=True, max_length=50)
@@ -141,7 +142,6 @@ class StudentNewsSerializer(serializers.ModelSerializer):
         fields = ['title', 'body']
 
 
-
 class StudentAssignmentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment
@@ -163,7 +163,7 @@ class AnsAssignmentSerializer(serializers.ModelSerializer):
         if assignment and assignment.delivery_deadline < timezone.now().date():
             raise serializers.ValidationError(
                 "The deadline for this assignment has passed. You cannot submit an answer"
-                                              )
+            )
         return data
 
     def create(self, validated_data):
@@ -180,7 +180,8 @@ class AnsAssignmentSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         if validated_data['assignment'].delivery_deadline < timezone.now().date():
-            raise serializers.ValidationError("The deadline for this assignment has passed. You cannot update the answer")
+            raise serializers.ValidationError(
+                "The deadline for this assignment has passed. You cannot update the answer")
         else:
             instance.assignment = validated_data['assignment']
             instance.body = validated_data.get('body', instance.body)

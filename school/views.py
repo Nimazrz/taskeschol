@@ -1,3 +1,4 @@
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import mixins, authentication
@@ -11,6 +12,7 @@ from rest_framework.mixins import *
 from rest_framework.viewsets import GenericViewSet
 from django.shortcuts import get_object_or_404
 from .Permissions import *
+
 
 # Create your views here.
 
@@ -32,7 +34,7 @@ class LoginAPIView(APIView):
             login(request, user)
         return Response(
             {'message': f'You have successfully logged in'},
-                        status=status.HTTP_200_OK)
+            status=status.HTTP_200_OK)
 
 
 # @csrf_exempt
@@ -43,6 +45,7 @@ class LogoutAPIView(APIView):
     }
     send this as json request for logout
     """
+
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             logout(request)
@@ -88,17 +91,16 @@ class StudentNewsListAPIView(ListModelMixin, GenericViewSet):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated, IsStudent]
 
-
     def get_queryset(self):
         news = News.objects.filter(author=self.request.user.teacher)
         return news
+
 
 class TeacherAssignmentsAPIView(viewsets.ModelViewSet):
     serializer_class = TeacherAssignmentsSerializer
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated, IsTeacher]
-    pagination_class = 20
-
+    pagination_class = PageNumberPagination
     def get_queryset(self):
         teacher = self.request.user
         assignments = Assignment.objects.filter(teacher=teacher)
@@ -114,7 +116,7 @@ class StudentAssignmentsAPIView(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated, IsStudent]
 
     def get_queryset(self):
-        teacher = get_object_or_404(Teacher, user=self.request.user)
+        teacher = get_object_or_404(Teacher, username=self.request.user.teacher)
         return Assignment.objects.filter(teacher=teacher)
 
 
@@ -129,4 +131,3 @@ class AnsAssignmentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
-
