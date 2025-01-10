@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+#for database
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,17 +82,19 @@ WSGI_APPLICATION = 'taskeschol.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
+# Load environment variables from the .env file
+load_dotenv()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'school'),  # Defaults to 'school' if not set
-        'USER': os.getenv('DB_USER', 'school_admin'),  # Defaults to 'school_admin' if not set
-        'PASSWORD': os.getenv('DB_PASSWORD', 'adminadmin'),  # Defaults to 'adminadmin' if not set
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),  # Defaults to '5432' if not set
+        'NAME': os.getenv('DB_NAME',),
+        'USER': os.getenv('DB_USER',),
+        'PASSWORD': os.getenv('DB_PASSWORD',),
+        'HOST': os.getenv('DB_HOST','localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
